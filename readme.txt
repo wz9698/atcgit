@@ -98,5 +98,63 @@ Git是目前世界上最先进的分布式版本控制系统（没有之一）�
 
 	要重返未来，用git reflog查看命令历史，以便确定要回到未来的哪个版本。
 
+撤销修改:
+	Git会告诉你，git checkout -- file可以丢弃工作区的修改
+	命令git checkout -- readme.txt意思就是，把readme.txt文件在工作区的修改全部撤销，这里有两种情况：
+
+	一种是readme.txt自修改后还没有被放到暂存区，现在，撤销修改就回到和版本库一模一样的状态；
+
+	一种是readme.txt已经添加到暂存区后，又作了修改，现在，撤销修改就回到添加到暂存区后的状态。
+
+	总之，就是让这个文件回到最近一次git commit或git add时的状态。
+
+	git checkout -- file命令中的--很重要，没有--，就变成了“切换到另一个分支”的命令，我们在后面的分支	管理中会再次遇到git checkout命令。
+
+
+	假设文件已到暂存区，Git同样告诉我们，用命令git reset HEAD <file>可以把暂存区的修改撤销掉（unstag	e），重新放回工作区：
+
+	$ git reset HEAD readme.txt
+	Unstaged changes after reset:
+	M	readme.txt
+	git reset命令既可以回退版本，也可以把暂存区的修改回退到工作区。当我们用HEAD时，表示最新的版本。
+
+	再用git status查看一下，现在暂存区是干净的，工作区有修改。
+	还记得如何丢弃工作区的修改吗？
+
+	$ git checkout -- readme.txt
+
+	$ git status
+	On branch master
+	nothing to commit, working tree clean
+	整个世界终于清静了！
+
+小结：
+	场景1：当你改乱了工作区某个文件的内容，想直接丢弃工作区的修改时，用命令git checkout -- file。
+
+	场景2：当你不但改乱了工作区某个文件的内容，还添加到了暂存区时，想丢弃修改，分两步，第一步用命令g	it reset HEAD <file>，就回到了场景1，第二步按场景1操作。
+
+	场景3：已经提交了不合适的修改到版本库时，想要撤销本次提交，参考版本回退一节，不过前提是没有推送		到远程库。
+
+删除文件：
+	在Git中，删除也是一个修改操作。
+	一般情况下，你通常直接在文件管理器中把没用的文件删了，或者用rm命令删了。
+	这个时候，Git知道你删除了文件，因此，工作区和版本库就不一致了，git status命令会立刻告诉你哪些文		件被删除了。
+	现在你有两个选择，一是确实要从版本库中删除该文件，那就用命令git rm删掉，并且git commit：
+
+	$ git rm test.txt
+	rm 'test.txt'
+
+	$ git commit -m "remove test.txt"
+	[master d46f35e] remove test.txt
+ 	1 file changed, 1 deletion(-)
+ 	delete mode 100644 test.txt
+	现在，文件就从版本库中被删除了。
+	另一种情况是删错了，因为版本库里还有呢，所以可以很轻松地把误删的文件恢复到最新版本：
+
+	$ git checkout -- test.txt
+	git checkout其实是用版本库里的版本替换工作区的版本，无论工作区是修改还是删除，都可以“一键还原”。
+	注意：从来没有被添加到版本库就被删除的文件，是无法恢复的！
+小结：
+	命令git rm用于删除一个文件。如果一个文件已经被提交到版本库，那么你永远不用担心误删，但是要小心，	你只能恢复文件到最新版本，你会丢失最近一次提交后你修改的内容。
 
 
